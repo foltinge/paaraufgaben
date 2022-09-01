@@ -1,4 +1,4 @@
-# paaraufgaben
+# Vernetzte Partnerarbeit
  Die Software hinter der vernetzten Partnerarbeit
 - Für jeden Einsatz sollte der Ordner „Arbeitsauftrag“ auf den eigenen Rechner kopiert werden.
 - In diesem Ordner muss die Datei *namen.txt* aktualisiert werden. Bei abwesenden SuS muss ein * vor den Namen gesetzt werden.
