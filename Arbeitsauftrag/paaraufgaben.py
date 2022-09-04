@@ -13,24 +13,20 @@ anzahl=len(namen)
 
 # print(anzahl)
 
-n=4 # Anzahl der Leute, die mit einer Person gepaart werden
-
-# Das folgende Programm erzeugt einen d-regulären Graphen,
-# jeder Punkt ist mit n anderen Punkten verbunden.
-# n*anzahl muss gerade sein.
-# Quelle: https://de.wikipedia.org/wiki/Regulärer_Graph
-# https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.random_regular_graph.html
-# gesucht wird eine symmetrische Matrix m(i,j)=m(j,i) nur mit 0 und 1, 0<=i,j<=anzahl-1
-# deren Zeilensummen (und damit Spaltensummen) = n sind.
-
+n=2 # Anzahl der von jedem SuS ausgehenden (und eingehenden) Pfeile. Die Anzahl
+# der Nachbarn ist 2*n (hier 4)
+# Das folgende Programm erzeugt einen gerichteten Graphen, bei dem von jedem SuS
+# n Pfeile ausgehen bzw. eintreffen
 
 
 while True:
-    np=n*anzahl//2 # Anzahl der Paare, die erzeugt werden müssen
+    np=n*anzahl # Anzahl der Paare, die erzeugt werden müssen
 
     paare=[]
 
-    s=[0]*anzahl # Zeilensummen, die alle <= n sein müssen
+    rein=[0]*anzahl # Anzahl der eintreffenden Pfeile
+    raus=[0]*anzahl # Anzahl der ausgehenden Pfeile
+    # Am Ende muss gelten rein[i]=raus[i]=n
     v=0
     while v<10000:
         while True:
@@ -38,11 +34,10 @@ while True:
             j=random.randrange(anzahl)
             if i!=j:
                 break
-        if i>j:
-            i,j=j,i # sortiert
-        if s[i]<n and s[j]<n and (i,j) not in paare:
-            s[i]+=1
-            s[j]+=1 # wegen der Symmetrie der Matrix
+        # (i,j) ist ein Pfeil von i nach j
+        if raus[i]<n and rein[j]<n and (i,j) not in paare and (j,i) not in paare: # Weder (i,j) noch (j,i) darf es schon geben
+            raus[i]+=1
+            rein[j]+=1 # Die Anzahlen rein[], raus[] werden aktualisiert
             paare.append((i,j))
             v=0
             np-=1
@@ -53,7 +48,7 @@ while True:
         continue # die maximale Iterationszahl wurde erreicht, d.h. keine Lösung
     break # Lösung gefunden
 
-#print(paare)
+# print(paare)
 
 #Einlesen von aufgaben.tex: Erste Zeile: Überschrift, danach: Arbeitsauftrag,
 # dann Liste mit:
@@ -76,7 +71,6 @@ anzaufg=len(aufgaben) # Anzahl der Aufgaben, bei 7 oder mehr Aufgaben ist man au
 
 # Aufgaben zuordnen:
 aufgnr=dict() # einem Paar (i,j) zugeordnete Aufgabennummer
-aufgri=dict() # einem Paar (i,j) zugeordnete boolsche Variable (linker oder rechter Teil)
 
 for k,l in paare:
     # Alle Aufgaben, die schon zu k und l benachbart sind, werden gesammelt
@@ -95,7 +89,7 @@ for k,l in paare:
         if a not in nachbarn:
             break
     aufgnr[(k,l)]=a
-    aufgri[(k,l)]=random.random()>0.5
+
 
 # Aufgaben drucken, zuerst schueler.tex, dann kontrolle.tex
 
@@ -109,27 +103,19 @@ with open("_schueler.tex",mode="w") as f:
     for k in range(anzahl):
         print(r"""\begin{center}\large %s, Name: \emph{%s}\end{center}
 %s\\""" % (ueberschrift,namen[k],auftrag),file=f)
-        for i,j in paare:
+        for i,j in paare: #Wenn der SuS links steht, linke Seite der Aufgabe
             if i==k:
                 print(r"\vfill Mit \emph{%s}:"%namen[j],file=f)
                 aa=aufgaben[aufgnr[(i,j)]]
-                ri=aufgri[(i,j)]
-                if ri:
-                    print(r"""\begin{center}\underline{\hspace{\widthof{%s}*\real{2}}}
-%s%s\end{center}"""%(aa[0],trenner,aa[1]),file=f)
-                else:
-                    print(r"""\begin{center}%s%s
-\underline{\hspace{\widthof{%s}*\real{2}}}\end{center}"""%(aa[0],trenner,aa[1]),file=f)
-            if j==k:
+                print(r"""\begin{center}%s%s\underline{\hspace{\widthof{%s}*\real{2}}}
+\end{center}"""%(aa[0],trenner,aa[1]),file=f)
+
+            if j==k: #Wenn der SuS rechts steht, rechte Seite der Aufgabe
                 print(r"\vfill Mit \emph{%s}:"%namen[i],file=f)
                 aa=aufgaben[aufgnr[(i,j)]]
-                ri=aufgri[(i,j)]
-                if not ri:
-                    print(r"""\begin{center}\underline{\hspace{\widthof{%s}*\real{2}}}
+                print(r"""\begin{center}\underline{\hspace{\widthof{%s}*\real{2}}}
 %s%s\end{center}"""%(aa[0],trenner,aa[1]),file=f)
-                else:
-                    print(r"""\begin{center}%s%s\underline{\hspace{\widthof{%s}*\real{2}}}
-\end{center}"""%(aa[0],trenner,aa[1]),file=f)
+               
         if k<anzahl-1:
             print(r"\newpage",file=f)
 
