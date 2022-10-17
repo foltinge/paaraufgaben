@@ -5,3 +5,4 @@
 - Der eigentliche Arbeitsauftrag ist die Datei *aufgaben.tex*
 - Im Ordner *Material* befinden sich einige Beispiele, die sofort eingesetzt werden können. Dazu muss die entsprechende Datei in den Ordner Arbeitsauftrag kopiert und in *aufgaben.tex* umbenannt werden.
 - Die Generierung der Arbeitsblätter erfolgt über die Batch-Datei *startlauf.command* (Mac) oder *startlauf.bat* (Win)
+- Download über Code>Download ZIP
